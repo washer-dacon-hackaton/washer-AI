@@ -2,7 +2,7 @@
 
 import openai
 
-openai.api_key = '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'
+openai.api_key = ''
 
 messages = []
 while True:
