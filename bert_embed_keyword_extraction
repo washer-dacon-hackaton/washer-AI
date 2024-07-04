@@ -1,3 +1,8 @@
+BERT_EMBEDDING_KEYWORD_EXTRACTION
+===========================================
+
+
+```
 from keybert import KeyBERT
 
 doc = """
@@ -26,5 +31,7 @@ print(keywords)
 keyword_list = [keyword for keyword, score in keywords]
 
 # 결과 출력
+
+```
 print(keyword_list)
 
