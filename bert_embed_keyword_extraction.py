@@ -8,12 +8,13 @@ from collections import Counter
 from transformers import BertTokenizer, BertModel
 from sklearn.cluster import KMeans
 import torch
+import re
 
 # BERT 토크나이저와 모델 초기화
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-cased')
 bert_model = BertModel.from_pretrained('bert-base-multilingual-cased')
 
-# BERT 임베딩 계산 함수 정의
+# [BERT 임베딩 계산 함수 정의1]
 def calculate_embedding(text):
     inputs = tokenizer(text, return_tensors='pt', padding=True, truncation=True)
     with torch.no_grad():
@@ -21,7 +22,7 @@ def calculate_embedding(text):
         pooled_output = outputs.pooler_output  # [CLS] 토큰의 임베딩
     return pooled_output.numpy().flatten()
 
-# 행복 지수 계산 함수 정의
+# [행복 지수 계산 함수 정의2(날짜포함)]
 def calculate_happiness_score(doc):
     # KeyBERT를 사용하여 문서에서 키워드 추출
     kw_model = KeyBERT()
@@ -60,10 +61,21 @@ def calculate_happiness_score(doc):
 
     result = count_P + (5 * count_E) + (3 * count_H)
 
-    return result
+    # 문서에서 날짜 추출 예시 (YYYY년 MM월 DD일 형식)
+    date_pattern = r'(\d{4})년 (\d{1,2})월 (\d{1,2})일'
+    match = re.search(date_pattern, doc)
+    if match:
+        year = match.group(1)
+        month = match.group(2)
+        day = match.group(3)
+        extracted_date = f"{year}-{month.zfill(2)}-{day.zfill(2)}"  # YYYY-MM-DD 형식으로 변환
+        return result, extracted_date
+    else:
+        return result, None  # 날짜를 찾지 못한 경우 None 반환
 
 # 주어진 문서
 doc = """
+         2023년 7월 11일에 작성된 문서입니다. 
          Supervised learning is the machine learning task of learning a function that
          maps an input to an output based on example input-output pairs. It infers a
          function from labeled training data consisting of a set of training examples.
@@ -76,11 +88,17 @@ doc = """
          'reasonable' way (see inductive bias).
       """
 
-# 행복 지수 계산
-happiness_score = calculate_happiness_score(doc)
-print(happiness_score)
+# 행복 지수 계산 및 날짜 추출
+happiness_score, extracted_date = calculate_happiness_score(doc)
 
-[짧은 코멘트 함수3]
+# 결과 출력
+if extracted_date:
+    print(f"작성일자: {extracted_date}")
+else:
+    print("문서에서 날짜 정보를 찾을 수 없습니다.")
+print(f"행복 지수: {happiness_score}")
+
+# [짧은 코멘트 함수3]
 def get_happiness_message(happiness_score):
     if happiness_score <= 15:
         return "내일 더 행복하시길 바랍니다"
