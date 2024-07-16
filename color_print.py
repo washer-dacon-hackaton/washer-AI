@@ -1,22 +1,11 @@
-def analyze_emotions(user_input):
-    negative_emotions = [
-        '지속적인 슬픔', '흥미상실', '절망감', '무기력감', '죄책감', 
-        '잠이 안와', '입맛이 없어', '피로감', '신체통증', '집중력저하', 
-        '기억력 문제', '부정적사고', '사회적활동 감소', '일상 업무가 어려움', 
-        '위험행동 증가', '자살생각'
-    ]
-
-    positive_emotions = [
-        '뿌듯함', '성취감', '만족감', '즐거움', '편안함', 
-        '차분함', '신남', '설렘', '기대', '사랑', 
-        '맛있음', '개운함', '시원함', '따듯함', '포근함', 
-        '멋있음'
-    ]
-
+def analyze_emotions_using_words_df(user_input, negative_words_df, positive_words_df):
     # 사용자 입력을 리스트로 변환
     selected_emotions = [emotion.strip() for emotion in user_input.split(',')]
 
     # 각 키워드의 긍정/부정 여부 확인 및 개수 세기
+    negative_emotions = negative_words_df['단어'].tolist()
+    positive_emotions = positive_words_df['단어'].tolist()
+
     num_negative_selected = sum(1 for emotion in selected_emotions if emotion in negative_emotions)
     num_positive_selected = sum(1 for emotion in selected_emotions if emotion in positive_emotions)
 
@@ -46,7 +35,6 @@ def analyze_emotions(user_input):
     print(f"전체 감정 점수: {overall_score:.2f} % (0%: 가장 부정적, 100%: 가장 긍정적)")
 
     return overall_score
-
 def score_to_color(score):
     """
     Converts a score (0 to 100) to a grayscale color.
@@ -73,10 +61,10 @@ def visualize_color(color):
     plt.show()
 
 # 사용자에게 입력 받기
-user_input = input("선택할 감정 키워드를 입력하세요. (예: 지속적인 슬픔, 뿌듯함, 만족감, 편안함, 기대): ")
+user_input = input("선택할 감정 키워드를 입력하세요. (예: 울다, 울상, 기쁘다, 뿌듯하다): ")
 
 # 함수 호출
-overall_score = analyze_emotions(user_input)
+overall_score = analyze_emotions_using_words_df(user_input, negative_words_df, positive_words_df)
 
 # 색상 변환 및 시각화
 color = score_to_color(overall_score)
