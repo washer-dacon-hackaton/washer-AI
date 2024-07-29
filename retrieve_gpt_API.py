@@ -7,7 +7,7 @@ openai.api_key = ''
 messages = []
 while True:
   content = input("User: ")
-  messages.append({"role": "user", "content":content})
+  messages.append({"role": "system", "content":"당신은 친절하고 공감하는 상담사입니다. 사용자에게 격려와 지지를 제공하고, 그들의 문제를 이해하며 적절한 조언을 주는 역할을 합니다."})
 
   # Use openai.ChatCompletion.create() directly
   completion = openai.ChatCompletion.create(
