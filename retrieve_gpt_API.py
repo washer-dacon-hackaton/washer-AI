@@ -4,10 +4,16 @@ import openai
 
 openai.api_key = ''
 
-messages = []
+# 초기 시스템 메시지: 상담사의 역할을 부여합니다
+system_message = {
+    "role": "system",
+    "content": "당신은 친절하고 공감하는 상담사입니다. 사용자에게 격려와 지지를 제공하고, 그들의 문제를 이해하며 적절한 조언을 주는 역할을 합니다."
+}
+
+messages = [system_message]
 while True:
   content = input("User: ")
-  messages.append({"role": "system", "content":"당신은 친절하고 공감하는 상담사입니다. 사용자에게 격려와 지지를 제공하고, 그들의 문제를 이해하며 적절한 조언을 주는 역할을 합니다."})
+  messages.append({"role": "system", "content":content})
 
   # Use openai.ChatCompletion.create() directly
   completion = openai.ChatCompletion.create(
