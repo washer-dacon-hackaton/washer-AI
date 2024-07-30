@@ -17,44 +17,60 @@ def analyze_emotions_using_words_df(user_input, df):
     category_counts = {category: 0 for category in unique_emotion_categories}
 
     # 각 키워드의 감정분류 확인 및 개수 세기
+    total_count = 0
     for emotion in selected_emotions:
         matches = df[df['단어'] == emotion]
         if not matches.empty:
             for category in matches['감정분류'].unique():
                 category_counts[category] += 1
+                total_count += 1
         else:
             print(f"{emotion}: 해당하는 감정 키워드가 없습니다.")
 
     # 가장 많은 키워드가 속한 감정분류 찾기
     max_category = max(category_counts, key=category_counts.get)
     max_count = category_counts[max_category]
+    max_ratio = (max_count / total_count) * 100 if total_count > 0 else 0
 
-    print(f"\n가장 많은 키워드가 속한 감정분류: {max_category} ")
+    print(f"\n가장 많은 키워드가 속한 감정분류: {max_category}")
 
     # 해당 감정분류의 색상
-    color = emotion_category_to_color(max_category)
-    print(f"{max_category}의 색상: {color}")
+    color = emotion_category_to_color(max_category, max_ratio)
+    print(f"{max_category}의 색상 (명도 비율 적용): {color}")
 
     return max_category, color
 
-def emotion_category_to_color(category):
+def emotion_category_to_color(category, brightness_percentage):
     """
-    Maps an emotion category to a specific color.
+    Maps an emotion category to a specific color and applies brightness percentage.
     """
     if category == '슬픔과 애도':
-        return (0, 0, 255)  # 파란색
+        base_color = (0, 0, 255)  # 파란색
     elif category == '지루함과 무료':
-        return (210, 180, 140)  # 베이지/갈색
+        base_color = (210, 180, 140)  # 베이지/갈색
     elif category == '공포와 불안':
-        return (0, 0, 0)  # 검은색
+        base_color = (0, 0, 0)  # 검은색
     elif category == '기쁨과 행복':
-        return (255, 255, 0)  # 노란색
+        base_color = (255, 255, 0)  # 노란색
     elif category == '자존감과 성취':
-        return (128, 0, 128)  # 보라색
+        base_color = (128, 0, 128)  # 보라색
     elif category == '따뜻함과 감사':
-        return (0, 255, 0)  # 초록색
+        base_color = (0, 255, 0)  # 초록색
     else:
-        return (128, 128, 128)  # 회색 (기타)
+        base_color = (128, 128, 128)  # 회색 (기타)
+
+    # 명도 비율 적용 (각 채널에 비율을 곱함)
+    adjusted_color = adjust_brightness(base_color, brightness_percentage)
+
+    return adjusted_color
+
+def adjust_brightness(color, brightness_percentage):
+    """
+    Adjusts the brightness of a color by a given percentage.
+    """
+    brightness_ratio = brightness_percentage / 100
+    adjusted_color = tuple(int(channel * brightness_ratio) for channel in color)
+    return adjusted_color
 
 def visualize_color(color):
     """
@@ -80,3 +96,4 @@ max_category, color = analyze_emotions_using_words_df(user_input, df)
 
 # 색상 시각화
 visualize_color(color)
+
